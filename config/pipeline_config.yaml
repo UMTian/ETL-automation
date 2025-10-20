@@ -1,0 +1,117 @@
+pipeline:
+  name: "universal_etl_pipeline"
+  version: "1.0.0"
+  description: "Local-first universal ETL pipeline"
+  
+extract:
+  source_type: "csv"  # csv, sql, api, json, excel
+  source_path: "data/input/sample_transactions.csv"
+  batch_size: 10000
+  encoding: "utf-8"
+  delimiter: ","
+  
+  # Database configuration (when source_type is sql)
+  database:
+    host: "${DB_HOST}"
+    port: "${DB_PORT}"
+    name: "${DB_NAME}"
+    user: "${DB_USER}"
+    password: "${DB_PASSWORD}"
+    query: "SELECT * FROM transactions"
+    
+  # API configuration (when source_type is api)
+  api:
+    base_url: "${API_BASE_URL}"
+    endpoint: "/data"
+    headers:
+      Authorization: "Bearer ${API_KEY}"
+    timeout: "${API_TIMEOUT}"
+  
+transform:
+  enable_cleaning: true
+  enable_validation: true
+  enable_feature_engineering: true
+  
+  cleaning_rules:
+    remove_duplicates: true
+    handle_missing_values: "drop"  # drop, fill, interpolate
+    fill_value: 0
+    remove_outliers: false
+    outlier_threshold: 3.0
+    
+  validation_rules:
+    required_columns: ["id", "amount", "date"]
+    data_types:
+      id: "int64"
+      amount: "float64"
+      date: "datetime64[ns]"
+    constraints:
+      amount: ">= 0"
+      date: "not_null"
+      
+  feature_engineering:
+    create_date_features: true
+    create_numeric_features: true
+    text_processing: false
+    
+load:
+  output_format: "parquet"  # csv, parquet, json, excel, sql
+  output_path: "data/output/"
+  compression: "snappy"  # snappy, gzip, brotli
+  
+  # Database output (when output_format is sql)
+  database_output:
+    host: "${DB_HOST}"
+    port: "${DB_PORT}"
+    name: "${DB_NAME}"
+    user: "${DB_USER}"
+    password: "${DB_PASSWORD}"
+    table_name: "processed_transactions"
+    if_exists: "replace"  # replace, append, fail
+    
+  # File output options
+  csv_options:
+    index: false
+    date_format: "%Y-%m-%d %H:%M:%S"
+    
+  parquet_options:
+    index: false
+    compression: "snappy"
+    
+logging:
+  level: "${LOG_LEVEL}"
+  file_path: "logs/etl_pipeline.log"
+  max_file_size: "10MB"
+  backup_count: 5
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  
+  # Console logging
+  console_enabled: true
+  console_level: "INFO"
+  
+monitoring:
+  enable_metrics: true
+  enable_progress_bar: true
+  enable_execution_time: true
+  
+  # Data quality metrics
+  track_record_count: true
+  track_processing_time: true
+  track_error_count: true
+  
+error_handling:
+  max_retries: "${MAX_RETRIES}"
+  retry_delay: 5  # seconds
+  continue_on_error: false
+  log_errors: true
+  
+file_watcher:
+  enabled: "${ENABLE_FILE_WATCHER}"
+  watch_directory: "data/input/"
+  file_patterns: ["*.csv", "*.json", "*.xlsx"]
+  debounce_time: 2  # seconds
+  
+development:
+  enable_hot_reload: true
+  enable_debug_mode: false
+  enable_profiling: false

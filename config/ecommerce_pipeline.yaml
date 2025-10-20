@@ -1,0 +1,79 @@
+pipeline:
+  name: "ecommerce_transactions_pipeline"
+  version: "1.0.0"
+  description: "E-commerce transactions ETL pipeline with advanced data cleaning"
+
+extract:
+  source_type: "csv"
+  source_path: "data/input/ecommerce_transactions.csv"
+  batch_size: 10000
+  encoding: "utf-8"
+  delimiter: ","
+
+transform:
+  enable_cleaning: true
+  enable_validation: true
+  enable_feature_engineering: true
+  
+  cleaning_rules:
+    remove_duplicates: true
+    handle_missing_values: "drop"
+    fill_value: 0
+    remove_outliers: true
+    outlier_threshold: 2.5  # More aggressive outlier removal for financial data
+    
+  validation_rules:
+    required_columns: ["transaction_id", "customer_id", "amount", "transaction_date", "status"]
+    data_types:
+      transaction_id: "object"
+      customer_id: "int64"
+      amount: "float64"
+      transaction_date: "datetime64[ns]"
+      status: "object"
+    constraints:
+      amount: ">= 0"
+      transaction_date: "not_null"
+      status: "in ['completed', 'pending', 'failed', 'cancelled']"
+      
+  feature_engineering:
+    create_date_features: true
+    create_numeric_features: true
+    text_processing: false
+    
+load:
+  output_format: "parquet"
+  output_path: "data/output/ecommerce/"
+  compression: "snappy"
+  
+  # File output options
+  parquet_options:
+    index: false
+    compression: "snappy"
+    
+logging:
+  level: "${LOG_LEVEL}"
+  file_path: "logs/ecommerce_pipeline.log"
+  max_file_size: "10MB"
+  backup_count: 5
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  console_enabled: true
+  console_level: "INFO"
+
+monitoring:
+  enable_metrics: true
+  enable_progress_bar: true
+  enable_execution_time: true
+  track_record_count: true
+  track_processing_time: true
+  track_error_count: true
+
+error_handling:
+  max_retries: "${MAX_RETRIES}"
+  retry_delay: 5
+  continue_on_error: false
+  log_errors: true
+
+development:
+  enable_hot_reload: true
+  enable_debug_mode: false
+  enable_profiling: false

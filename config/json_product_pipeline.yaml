@@ -1,0 +1,80 @@
+pipeline:
+  name: "json_product_catalog_pipeline"
+  version: "1.0.0"
+  description: "JSON product catalog ETL pipeline"
+
+extract:
+  source_type: "json"
+  source_path: "data/input/product_catalog.json"
+  encoding: "utf-8"
+
+transform:
+  enable_cleaning: true
+  enable_validation: true
+  enable_feature_engineering: true
+  
+  cleaning_rules:
+    remove_duplicates: true
+    handle_missing_values: "fill"
+    fill_value: "Unknown"
+    remove_outliers: true
+    outlier_threshold: 3.0
+    
+  validation_rules:
+    required_columns: ["product_id", "name", "category", "price", "brand"]
+    data_types:
+      product_id: "object"
+      name: "object"
+      category: "object"
+      price: "float64"
+      brand: "object"
+      in_stock: "bool"
+      stock_quantity: "int64"
+      rating: "float64"
+    constraints:
+      price: ">= 0"
+      rating: ">= 0 and <= 5"
+      stock_quantity: ">= 0"
+      
+  feature_engineering:
+    create_date_features: true
+    create_numeric_features: true
+    text_processing: true
+    
+load:
+  output_format: "parquet"
+  output_path: "data/output/products/"
+  compression: "snappy"
+  
+  # Parquet output options
+  parquet_options:
+    index: false
+    compression: "snappy"
+    
+logging:
+  level: "${LOG_LEVEL}"
+  file_path: "logs/json_product_pipeline.log"
+  max_file_size: "10MB"
+  backup_count: 5
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  console_enabled: true
+  console_level: "INFO"
+
+monitoring:
+  enable_metrics: true
+  enable_progress_bar: true
+  enable_execution_time: true
+  track_record_count: true
+  track_processing_time: true
+  track_error_count: true
+
+error_handling:
+  max_retries: "${MAX_RETRIES}"
+  retry_delay: 5
+  continue_on_error: false
+  log_errors: true
+
+development:
+  enable_hot_reload: true
+  enable_debug_mode: false
+  enable_profiling: false

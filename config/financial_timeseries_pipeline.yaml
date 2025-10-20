@@ -1,0 +1,90 @@
+pipeline:
+  name: "financial_timeseries_pipeline"
+  version: "1.0.0"
+  description: "Financial time-series data ETL pipeline with advanced validation"
+
+extract:
+  source_type: "csv"
+  source_path: "data/input/financial_timeseries.csv"
+  batch_size: 5000
+  encoding: "utf-8"
+  delimiter: ","
+
+transform:
+  enable_cleaning: true
+  enable_validation: true
+  enable_feature_engineering: true
+  
+  cleaning_rules:
+    remove_duplicates: true
+    handle_missing_values: "drop"
+    fill_value: 0.0
+    remove_outliers: true
+    outlier_threshold: 4.0  # More lenient for financial data volatility
+    
+  validation_rules:
+    required_columns: ["timestamp", "symbol", "close_price", "volume"]
+    data_types:
+      timestamp: "datetime64[ns]"
+      symbol: "object"
+      open_price: "float64"
+      high_price: "float64"
+      low_price: "float64"
+      close_price: "float64"
+      volume: "int64"
+      market_cap: "int64"
+      pe_ratio: "float64"
+      beta: "float64"
+      rsi: "float64"
+      volatility: "float64"
+    constraints:
+      close_price: "> 0 and <= 10000"
+      volume: ">= 0"
+      pe_ratio: ">= 0 and <= 200"
+      beta: ">= -5 and <= 5"
+      rsi: ">= 0 and <= 100"
+      volatility: ">= 0 and <= 2.0"
+      currency: "in ['USD', 'EUR', 'GBP', 'CAD', 'JPY']"
+      sector: "in ['Technology', 'Healthcare', 'Financial', 'Consumer Discretionary', 'Communication Services', 'Energy', 'Industrials', 'Materials', 'Real Estate', 'Utilities', 'Consumer Staples']"
+      
+  feature_engineering:
+    create_date_features: true
+    create_numeric_features: true
+    text_processing: false
+    
+load:
+  output_format: "parquet"
+  output_path: "data/output/financial/"
+  compression: "snappy"
+  
+  parquet_options:
+    index: false
+    compression: "snappy"
+    
+logging:
+  level: "${LOG_LEVEL}"
+  file_path: "logs/financial_timeseries_pipeline.log"
+  max_file_size: "10MB"
+  backup_count: 5
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  console_enabled: true
+  console_level: "INFO"
+
+monitoring:
+  enable_metrics: true
+  enable_progress_bar: true
+  enable_execution_time: true
+  track_record_count: true
+  track_processing_time: true
+  track_error_count: true
+
+error_handling:
+  max_retries: "${MAX_RETRIES}"
+  retry_delay: 5
+  continue_on_error: false
+  log_errors: true
+
+development:
+  enable_hot_reload: true
+  enable_debug_mode: false
+  enable_profiling: false

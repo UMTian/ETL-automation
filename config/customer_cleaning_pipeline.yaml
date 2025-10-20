@@ -1,0 +1,80 @@
+pipeline:
+  name: "customer_data_cleaning_pipeline"
+  version: "1.0.0"
+  description: "Customer data cleaning pipeline for dirty datasets"
+
+extract:
+  source_type: "csv"
+  source_path: "data/input/customer_data_dirty.csv"
+  batch_size: 10000
+  encoding: "utf-8"
+  delimiter: ","
+
+transform:
+  enable_cleaning: true
+  enable_validation: true
+  enable_feature_engineering: false
+  
+  # Cleaning configuration
+  cleaning_rules:
+    remove_duplicates: true
+    handle_missing_values: "drop"  # Aggressive cleaning for customer data
+    fill_value: 0
+    remove_outliers: true
+    outlier_threshold: 2.0  # Very aggressive outlier removal for customer data
+    
+  validation_rules:
+    required_columns: ["customer_id", "name", "email", "age", "income"]
+    data_types:
+      customer_id: "int64"
+      name: "object"
+      email: "object"
+      age: "int64"
+      income: "int64"
+    constraints:
+      age: ">= 0 and <= 120"
+      income: ">= 0 and <= 1000000"
+      email: "contains '@'"
+      
+  feature_engineering:
+    create_date_features: false
+    create_numeric_features: false
+    text_processing: false
+    
+load:
+  output_format: "csv"  # Use CSV for easier inspection of cleaned data
+  output_path: "data/output/customers/"
+  compression: "none"
+  
+  # CSV output options
+  csv_options:
+    index: false
+    date_format: "%Y-%m-%d"
+    
+logging:
+  level: "${LOG_LEVEL}"
+  file_path: "logs/customer_cleaning_pipeline.log"
+  max_file_size: "10MB"
+  backup_count: 5
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  console_enabled: true
+  console_level: "INFO"
+
+monitoring:
+  enable_metrics: true
+  enable_progress_bar: true
+  enable_execution_time: true
+  track_record_count: true
+  track_processing_time: true
+  track_error_count: true
+
+error_handling:
+  max_retries: "${MAX_RETRIES}"
+  retry_delay: 5
+  continue_on_error: false
+  log_errors: true
+
+development:
+  enable_hot_reload: true
+  enable_debug_mode: false
+  enable_profiling: false

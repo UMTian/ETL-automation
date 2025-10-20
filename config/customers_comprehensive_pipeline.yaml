@@ -1,0 +1,90 @@
+pipeline:
+  name: "customers_comprehensive_cleaning_pipeline"
+  version: "1.0.0"
+  description: "Comprehensive customer data cleaning and validation pipeline"
+
+extract:
+  source_type: "csv"
+  source_path: "data/input/customers_comprehensive.csv"
+  batch_size: 5000
+  encoding: "utf-8"
+  delimiter: ","
+
+transform:
+  enable_cleaning: true
+  enable_validation: true
+  enable_feature_engineering: true
+  
+  cleaning_rules:
+    remove_duplicates: true
+    handle_missing_values: "drop"  # Aggressive cleaning for customer data
+    fill_value: "Unknown"
+    remove_outliers: true
+    outlier_threshold: 2.5  # Aggressive outlier removal for customer data
+    
+  validation_rules:
+    required_columns: ["customer_id", "first_name", "last_name", "email", "registration_date"]
+    data_types:
+      customer_id: "int64"
+      first_name: "object"
+      last_name: "object"
+      email: "object"
+      annual_income: "int64"
+      credit_score: "int64"
+      total_orders: "int64"
+      lifetime_value: "float64"
+      avg_order_value: "float64"
+      number_of_children: "int64"
+    constraints:
+      annual_income: ">= 0 and <= 500000"
+      credit_score: ">= 300 and <= 850"
+      total_orders: ">= 0 and <= 1000"
+      lifetime_value: ">= 0 and <= 100000"
+      avg_order_value: ">= 0 and <= 2000"
+      number_of_children: ">= 0 and <= 10"
+      email: "contains '@'"
+      customer_segment: "in ['Basic', 'Standard', 'Premium', 'VIP']"
+      account_status: "in ['active', 'inactive', 'suspended', 'closed']"
+      gender: "in ['Male', 'Female', 'Non-binary', 'Other', 'Prefer not to say']"
+      
+  feature_engineering:
+    create_date_features: true
+    create_numeric_features: true
+    text_processing: false
+    
+load:
+  output_format: "csv"
+  output_path: "data/output/customers_comprehensive/"
+  compression: "none"
+  
+  csv_options:
+    index: false
+    date_format: "%Y-%m-%d %H:%M:%S"
+    
+logging:
+  level: "${LOG_LEVEL}"
+  file_path: "logs/customers_comprehensive_pipeline.log"
+  max_file_size: "10MB"
+  backup_count: 5
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  console_enabled: true
+  console_level: "INFO"
+
+monitoring:
+  enable_metrics: true
+  enable_progress_bar: true
+  enable_execution_time: true
+  track_record_count: true
+  track_processing_time: true
+  track_error_count: true
+
+error_handling:
+  max_retries: "${MAX_RETRIES}"
+  retry_delay: 5
+  continue_on_error: false
+  log_errors: true
+
+development:
+  enable_hot_reload: true
+  enable_debug_mode: true
+  enable_profiling: false

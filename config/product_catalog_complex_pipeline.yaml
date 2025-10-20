@@ -1,0 +1,75 @@
+pipeline:
+  name: "product_catalog_complex_pipeline"
+  version: "1.0.0"
+  description: "Complex JSON product catalog ETL pipeline with nested data handling"
+
+extract:
+  source_type: "json"
+  source_path: "data/input/product_catalog_complex.json"
+  encoding: "utf-8"
+
+transform:
+  enable_cleaning: true
+  enable_validation: true
+  enable_feature_engineering: true
+  
+  cleaning_rules:
+    remove_duplicates: true
+    handle_missing_values: "fill"
+    fill_value: "Unknown"
+    remove_outliers: true
+    outlier_threshold: 3.0
+    
+  validation_rules:
+    required_columns: ["product_id", "name", "category", "brand"]
+    data_types:
+      product_id: "object"
+      name: "object"
+      category: "object"
+      brand: "object"
+      status: "object"
+    constraints:
+      status: "in ['active', 'inactive', 'discontinued', 'draft']"
+      category: "in ['Electronics', 'Fashion', 'Home', 'Sports', 'Books', 'Health', 'Automotive']"
+      
+  feature_engineering:
+    create_date_features: true
+    create_numeric_features: true
+    text_processing: true
+    
+load:
+  output_format: "parquet"
+  output_path: "data/output/products_complex/"
+  compression: "snappy"
+  
+  parquet_options:
+    index: false
+    compression: "snappy"
+    
+logging:
+  level: "${LOG_LEVEL}"
+  file_path: "logs/product_catalog_complex_pipeline.log"
+  max_file_size: "10MB"
+  backup_count: 5
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  console_enabled: true
+  console_level: "INFO"
+
+monitoring:
+  enable_metrics: true
+  enable_progress_bar: true
+  enable_execution_time: true
+  track_record_count: true
+  track_processing_time: true
+  track_error_count: true
+
+error_handling:
+  max_retries: "${MAX_RETRIES}"
+  retry_delay: 5
+  continue_on_error: false
+  log_errors: true
+
+development:
+  enable_hot_reload: true
+  enable_debug_mode: false
+  enable_profiling: false
