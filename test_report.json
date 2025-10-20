@@ -1,0 +1,204 @@
+{
+  "timestamp": "2025-09-09T09:13:31.321734",
+  "tests_passed": 30,
+  "tests_failed": 6,
+  "total_tests": 36,
+  "feature_results": {
+    "Data Loading": [
+      {
+        "test": "Unified CSV Loading",
+        "status": true,
+        "details": "2366 rows, 25 columns"
+      },
+      {
+        "test": "CSV Support",
+        "status": true,
+        "details": "1000 rows"
+      },
+      {
+        "test": "JSON Support",
+        "status": false,
+        "details": "File not found"
+      },
+      {
+        "test": "Parquet Support",
+        "status": false,
+        "details": "File not found"
+      },
+      {
+        "test": "Excel Support",
+        "status": false,
+        "details": "File not found"
+      },
+      {
+        "test": "File Upload Simulation",
+        "status": true,
+        "details": "Uploaded 100 rows"
+      }
+    ],
+    "Data Quality": [
+      {
+        "test": "Missing Values Analysis",
+        "status": true,
+        "details": "24874 total missing values, 23 columns affected"
+      },
+      {
+        "test": "Duplicate Detection",
+        "status": true,
+        "details": "0 duplicate rows found"
+      },
+      {
+        "test": "Data Type Detection",
+        "status": true,
+        "details": "2 different data types"
+      },
+      {
+        "test": "Z-Score Outlier Detection",
+        "status": true,
+        "details": "4 outliers in age"
+      },
+      {
+        "test": "IQR Outlier Detection",
+        "status": true,
+        "details": "6 outliers in age"
+      },
+      {
+        "test": "Isolation Forest Outlier Detection",
+        "status": true,
+        "details": "193 outliers detected"
+      }
+    ],
+    "AI Integration": [
+      {
+        "test": "Groq API Key",
+        "status": true,
+        "details": "API key found"
+      },
+      {
+        "test": "Groq Package Import",
+        "status": true,
+        "details": "Package imported successfully"
+      },
+      {
+        "test": "Groq Client Creation",
+        "status": true,
+        "details": "Client created successfully"
+      },
+      {
+        "test": "AI Data Analysis Function",
+        "status": true,
+        "details": "Function executed successfully"
+      }
+    ],
+    "Visualization": [
+      {
+        "test": "Plotly Import",
+        "status": true,
+        "details": "Plotly imported successfully"
+      },
+      {
+        "test": "Scatter Plot Creation",
+        "status": true,
+        "details": "Scatter plot created"
+      },
+      {
+        "test": "Bar Chart Creation",
+        "status": true,
+        "details": "Bar chart created"
+      },
+      {
+        "test": "Histogram Creation",
+        "status": true,
+        "details": "Histogram created"
+      },
+      {
+        "test": "Correlation Heatmap",
+        "status": true,
+        "details": "Heatmap created"
+      },
+      {
+        "test": "Subplot Creation",
+        "status": true,
+        "details": "Subplots created"
+      }
+    ],
+    "ETL Pipeline": [
+      {
+        "test": "Core Pipeline Import",
+        "status": true,
+        "details": "Pipeline classes imported"
+      },
+      {
+        "test": "CSV Extractor",
+        "status": false,
+        "details": "'str' object has no attribute 'get'"
+      },
+      {
+        "test": "Data Transformers",
+        "status": true,
+        "details": "Transformers available"
+      },
+      {
+        "test": "Data Loaders",
+        "status": false,
+        "details": "'str' object has no attribute 'get'"
+      },
+      {
+        "test": "Pipeline Configuration",
+        "status": true,
+        "details": "Configuration system available"
+      }
+    ],
+    "ML Features": [
+      {
+        "test": "ML Components Import",
+        "status": true,
+        "details": "ML components imported"
+      },
+      {
+        "test": "Scikit-learn Integration",
+        "status": true,
+        "details": "ML libraries available"
+      },
+      {
+        "test": "Data Splitting",
+        "status": true,
+        "details": "Train/test split successful"
+      }
+    ],
+    "Domain Analysis": [
+      {
+        "test": "Healthcare Data Detection",
+        "status": true,
+        "details": "Detected 4 healthcare columns"
+      },
+      {
+        "test": "Financial Data Detection",
+        "status": true,
+        "details": "Detected 4 financial columns"
+      },
+      {
+        "test": "E-commerce Data Detection",
+        "status": true,
+        "details": "Detected 5 e-commerce columns"
+      }
+    ],
+    "Streamlit": [
+      {
+        "test": "Streamlit Import",
+        "status": true,
+        "details": "Streamlit version: 1.49.1"
+      },
+      {
+        "test": "Dashboard File",
+        "status": false,
+        "details": "'charmap' codec can't decode byte 0x8f in position 1483: character maps to <undefined>"
+      },
+      {
+        "test": "Process Running",
+        "status": true,
+        "details": "Streamlit process is running"
+      }
+    ]
+  }
+}
