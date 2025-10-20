@@ -7,9 +7,9 @@ import os
 import sys
 from datetime import datetime
 from dotenv import load_dotenv
-from src.core.config import PipelineConfig
-from src.core.pipeline import ETLPipeline
-from src.core.logger import PipelineLogger
+from config import PipelineConfig
+from pipeline import ETLPipeline
+from logger import PipelineLogger
 
 
 def main():
@@ -70,3 +70,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+
